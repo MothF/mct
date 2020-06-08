@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {ChartType} from 'chart.js';
 
 @Component({
   selector: 'app-chart',
@@ -24,7 +23,6 @@ export class ChartComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-
   }
 
 }

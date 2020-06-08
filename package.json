@@ -19,6 +19,7 @@
     "@angular/platform-browser": "~9.0.7",
     "@angular/platform-browser-dynamic": "~9.0.7",
     "@angular/router": "~9.0.7",
+    "@types/mathjs": "^6.0.5",
     "bootstrap": "^4.5.0",
     "chart.js": "^2.9.3",
     "mathjs": "^7.0.1",
