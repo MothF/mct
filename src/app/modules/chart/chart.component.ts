@@ -1,7 +1,6 @@
-import {Component, OnInit, SimpleChange, SimpleChanges, ViewChild} from '@angular/core';
-import {SolutionFinderService} from '../../services/solution-finder.service';
-import {BaseChartDirective} from 'ng2-charts';
-import {element} from 'protractor';
+import { Component, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { BaseChartDirective } from 'ng2-charts';
+import {SolutionFinderService } from '../../services/solution-finder.service';
 
 @Component({
   selector: 'app-chart',
@@ -19,11 +18,11 @@ export class ChartComponent implements OnInit {
         // tslint:disable-next-line:prefer-const
         let y = new Array<any>();
         data.forEach((elem) => {
-          x.push(elem.re);
+          x.push(elem.re.toFixed(2));
           y.push(elem.im);
         });
         this.data = [
-          {data: y, label: 'Series A'},
+          { data: y, label: 'Series A' },
         ];
         this.labels = x;
       }
@@ -48,9 +47,9 @@ export class ChartComponent implements OnInit {
   };
 
 
-  public labels;
+  public labels: any[];
   public legend = true;
-  public data;
+  public data: any;
 
   ngOnInit(): void {
     this.chart.labels = [];

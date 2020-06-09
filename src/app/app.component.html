@@ -4,23 +4,16 @@
       <div class="row no-gutters collapse navbar-collapse">
 
         <div class="col-sm-1">
-          <ul>
-            <li class="nav-item active">
-              <a routerLink="/chart" routerLinkActive="active">Chart</a>
-            </li>
-          </ul>
+
         </div>
         <div class="col-sm-1">
-          <ul>
-            <li class="nav-item active">
-              <a routerLink="/table" routerLinkActive="active">Table</a>
-            </li>
-          </ul>
+
         </div>
         <div class="col-sm-4"></div>
         <div class="col-sm-2 float-right">
           <div class="custom-control custom-radio ">
-            <input (click)="onComplexClick()" type="radio" id="complexRadio" name="customRadio" class="custom-control-input">
+            <input (click)="onComplexClick()" type="radio" id="complexRadio" name="customRadio"
+              class="custom-control-input">
             <label class="custom-control-label" for="complexRadio">Complex</label>
           </div>
           <div (click)="onFunctionClick()" class="custom-control custom-radio">
@@ -32,13 +25,13 @@
           <form [formGroup]="inputDataForm" (ngSubmit)="onSubmit()" class="form-inline">
             <div class="flex-row">
               <input formControlName="size" class="form-control mr-sm-2 col-3" type="text" placeholder="Size"
-                     aria-label="Search">
+                aria-label="Search">
               <input formControlName="start" class="form-control mr-sm-2 col-2" type="text" placeholder="Start"
-                     aria-label="Search">
+                aria-label="Search">
               <input formControlName="end" class="form-control mr-sm-2 col-2" type="text" placeholder="End"
-                     aria-label="Search">
-              <button [disabled]="!(complexSelected || functionSelected)"
-                      class="btn btn-primary my-2 my-sm-0" type="submit">Provide</button>
+                aria-label="Search">
+              <button [disabled]="!(complexSelected || functionSelected)" class="btn btn-primary my-2 my-sm-0"
+                type="submit">Provide</button>
             </div>
           </form>
         </div>

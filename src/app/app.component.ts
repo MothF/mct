@@ -1,8 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
-import {SolutionFinderService} from './services/solution-finder.service';
-import {InputType} from './models/input.type';
-import {log} from 'util';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { SolutionFinderService } from './services/solution-finder.service';
+import { InputType } from './models/input.type';
 
 @Component({
   selector: 'app-root',
@@ -40,6 +39,7 @@ export class AppComponent implements OnInit {
       this.solutionService.setType(InputType.Function);
     }
     this.solutionService.initVector();
+    this.solutionService.initMatrix();
   }
 
   onComplexClick() {
