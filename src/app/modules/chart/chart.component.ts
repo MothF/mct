@@ -1,4 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, SimpleChange, SimpleChanges, ViewChild} from '@angular/core';
+import {SolutionFinderService} from '../../services/solution-finder.service';
+import {BaseChartDirective} from 'ng2-charts';
+import {element} from 'protractor';
 
 @Component({
   selector: 'app-chart',
@@ -7,22 +10,52 @@ import {Component, OnInit} from '@angular/core';
 })
 export class ChartComponent implements OnInit {
 
-  constructor() {
+  constructor(private solutionFinderService: SolutionFinderService) {
+    solutionFinderService.eventCallback.subscribe(data => {
+
+      if (data) {
+        // tslint:disable-next-line:prefer-const
+        let x = new Array<any>();
+        // tslint:disable-next-line:prefer-const
+        let y = new Array<any>();
+        data.forEach((elem) => {
+          x.push(elem.re);
+          y.push(elem.im);
+        });
+        this.data = [
+          {data: y, label: 'Series A'},
+        ];
+        this.labels = x;
+      }
+      this.chart.data = this.data;
+      this.chart.labels = this.labels;
+      this.chart.ngOnChanges({} as SimpleChanges);
+    });
   }
 
-  public barChartOptions = {
+  @ViewChild(BaseChartDirective)
+  public chart: BaseChartDirective;
+
+
+  public options = {
     scaleShowVerticalLines: false,
-    responsive: true
+    responsive: true,
+    elements: {
+      line: {
+        fill: false
+      }
+    }
   };
-  public barChartLabels = ['2006', '2007', '2008', '2009', '2010', '2011', '2012'];
-  public barChartType = 'line';
-  public barChartLegend = true;
-  public barChartData = [
-    {data: [65, 59, 80, 81, 56, 55, 40], label: 'Series A'},
-    {data: [28, 48, 40, 19, 86, 27, 90], label: 'Series B'}
-  ];
+
+
+  public labels;
+  public legend = true;
+  public data;
 
   ngOnInit(): void {
+    this.chart.labels = [];
+    this.chart.chartType = 'line';
+    this.chart.legend = this.legend;
+    this.chart.data = [];
   }
-
 }
