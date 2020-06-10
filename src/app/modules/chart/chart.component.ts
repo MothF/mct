@@ -1,33 +1,47 @@
-import { Component, OnInit, SimpleChanges, ViewChild } from '@angular/core';
-import { BaseChartDirective } from 'ng2-charts';
-import {SolutionFinderService } from '../../services/solution-finder.service';
+import {Component, OnInit, SimpleChanges, ViewChild} from '@angular/core';
+import {BaseChartDirective} from 'ng2-charts';
+import {SolutionFinderService} from '../../services/solution-finder.service';
 
 @Component({
   selector: 'app-chart',
   templateUrl: './chart.component.html',
   styleUrls: ['./chart.component.less']
 })
-export class ChartComponent implements OnInit {
+export class ChartComponent {
 
   constructor(private solutionFinderService: SolutionFinderService) {
     solutionFinderService.eventCallback.subscribe(data => {
-
+      console.log(data);
       if (data) {
-        // tslint:disable-next-line:prefer-const
-        let x = new Array<any>();
-        // tslint:disable-next-line:prefer-const
-        let y = new Array<any>();
-        data.forEach((elem) => {
-          x.push(elem.re.toFixed(2));
-          y.push(elem.im);
+        const initialX = new Array<any>();
+        const initialY = new Array<any>();
+        const solvedX = new Array<any>();
+        const solvedY = new Array<any>();
+        data.initial.forEach((elem) => {
+          initialX.push(elem.re.toFixed(2));
+          initialY.push(elem.im);
+        });
+        data.solved.forEach((elem) => {
+          solvedX.push(elem.re.toFixed(2));
+          solvedY.push(elem.im);
         });
         this.data = [
-          { data: y, label: 'Series A' },
+          {
+            data: initialY,
+            label: 'Series A',
+            fill: false,
+            pointRadius: 1
+          },
+          {
+            data: solvedY,
+            label: 'Series B',
+            fill: false,
+            pointRadius: 1
+          }
         ];
-        this.labels = x;
+        this.labels = initialX;
       }
-      this.chart.data = this.data;
-      this.chart.labels = this.labels;
+      this.chart.datasets = this.data;
       this.chart.ngOnChanges({} as SimpleChanges);
     });
   }
@@ -35,26 +49,7 @@ export class ChartComponent implements OnInit {
   @ViewChild(BaseChartDirective)
   public chart: BaseChartDirective;
 
-
-  public options = {
-    scaleShowVerticalLines: false,
-    responsive: true,
-    elements: {
-      line: {
-        fill: false
-      }
-    }
-  };
-
-
   public labels: any[];
   public legend = true;
   public data: any;
-
-  ngOnInit(): void {
-    this.chart.labels = [];
-    this.chart.chartType = 'line';
-    this.chart.legend = this.legend;
-    this.chart.data = [];
-  }
 }

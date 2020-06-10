@@ -1,0 +1,38 @@
+import {Injectable} from '@angular/core';
+import {Complex} from 'mathjs';
+import * as math from 'mathjs';
+
+@Injectable()
+export class ComplexUtilsService {
+
+  constructor() {
+  }
+
+  public add(first: Complex, second: Complex): Complex {
+    return math.complex(first.re + second.re, first.im + second.im);
+  }
+
+  public multiply(first: Complex, second: Complex): Complex {
+    const re = first.re * second.re - first.im * second.im;
+    const im = first.re * second.im + first.im * second.re;
+    return math.complex(re, im);
+  }
+
+  public divide(z1: Complex, z2: Complex): Complex {
+    const re = (z1.re * z2.re + z1.im * z2.im) / (math.square(z2.re) + math.square(z2.im));
+    const im = (z2.re * z1.im - z1.re * z2.im) / (math.square(z2.re) + math.square(z2.im));
+    return math.complex(re, im);
+  }
+
+  public sort(vector: Complex[]): Complex[] {
+    return vector.sort((a: Complex, b: Complex): number => {
+      if (a.re < b.re) {
+        return -1;
+      }
+      if (a.re > b.re) {
+        return 1;
+      }
+      return a.re - b.re;
+    });
+  }
+}

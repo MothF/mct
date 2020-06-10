@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { SolutionFinderService } from './services/solution-finder.service';
-import { InputType } from './models/input.type';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {SolutionFinderService} from './services/solution-finder.service';
+import {InputType} from './models/input.type';
+import {ChartComponent} from './modules/chart/chart.component';
 
 @Component({
   selector: 'app-root',
@@ -21,17 +22,19 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.inputDataForm = this.formBuilder.group({
-      size: [''],
-      start: [''],
-      end: ['']
+      size: ['', Validators.required],
+      start: ['', Validators.required],
+      end: ['', Validators.required],
+      percent: ['', Validators.required]
     });
   }
 
   onSubmit() {
-    this.solutionService.setSizeAndSegment(
+    this.solutionService.setParams(
       Number.parseInt(this.inputDataForm.value.size, 10),
       Number.parseInt(this.inputDataForm.value.start, 10),
-      Number.parseInt(this.inputDataForm.value.end, 10)
+      Number.parseInt(this.inputDataForm.value.end, 10),
+      Number.parseInt(this.inputDataForm.value.percent, 10)
     );
     if (this.complexSelected) {
       this.solutionService.setType(InputType.Complex);
@@ -40,15 +43,16 @@ export class AppComponent implements OnInit {
     }
     this.solutionService.initVector();
     this.solutionService.initMatrix();
+    this.solutionService.solve();
   }
 
-  onComplexClick() {
-    this.complexSelected = true;
-    this.functionSelected = false;
-  }
-
-  onFunctionClick() {
-    this.functionSelected = true;
-    this.complexSelected = false;
+  onRadioClick($event) {
+    if ($event.target.id === 'complex') {
+      this.complexSelected = true;
+      this.functionSelected = false;
+    } else {
+      this.functionSelected = true;
+      this.complexSelected = false;
+    }
   }
 }

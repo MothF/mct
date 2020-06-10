@@ -8,6 +8,7 @@ import { ChartModule } from './modules/chart/chart.module';
 import { TableModule } from './modules/table/table.module';
 import { RandomService } from './services/random.service';
 import { SolutionFinderService } from './services/solution-finder.service';
+import {ComplexUtilsService} from './services/complex.utils.service';
 
 
 @NgModule({
@@ -22,7 +23,7 @@ import { SolutionFinderService } from './services/solution-finder.service';
     ChartsModule,
     ReactiveFormsModule
   ],
-  providers: [SolutionFinderService, RandomService],
+  providers: [SolutionFinderService, RandomService, ComplexUtilsService],
   bootstrap: [AppComponent]
 })
 export class AppModule {
