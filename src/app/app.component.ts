@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {SolutionFinderService} from './services/solution-finder.service';
-import {InputType} from './models/input.type';
+import {FunctionType} from './models/function.type';
 import {ChartComponent} from './modules/chart/chart.component';
 
 @Component({
@@ -23,8 +23,8 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.inputDataForm = this.formBuilder.group({
       size: ['', Validators.required],
-      start: ['', Validators.required],
-      end: ['', Validators.required],
+      start: [''],
+      end: [''],
       percent: ['', Validators.required]
     });
   }
@@ -37,9 +37,9 @@ export class AppComponent implements OnInit {
       Number.parseInt(this.inputDataForm.value.percent, 10)
     );
     if (this.complexSelected) {
-      this.solutionService.setType(InputType.Complex);
+      this.solutionService.setType(FunctionType.Complex);
     } else {
-      this.solutionService.setType(InputType.Function);
+      this.solutionService.setType(FunctionType.Real);
     }
     this.solutionService.initVector();
     this.solutionService.initMatrix();

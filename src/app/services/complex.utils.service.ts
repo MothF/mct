@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
-import {Complex} from 'mathjs';
 import * as math from 'mathjs';
+import {Complex} from 'mathjs';
+import {FunctionType} from '../models/function.type';
 
 @Injectable()
 export class ComplexUtilsService {
@@ -24,15 +25,23 @@ export class ComplexUtilsService {
     return math.complex(re, im);
   }
 
-  public sort(vector: Complex[]): Complex[] {
+  public sort(type: FunctionType, vector: Complex[]): Complex[] {
     return vector.sort((a: Complex, b: Complex): number => {
-      if (a.re < b.re) {
+      if (Number.parseInt((math.abs(a.re - b.re)).toFixed(0), 10) === 0) {
+        if (a.im < b.im) {
+          return -1;
+        } else if (a.im > b.im) {
+          return 1;
+        } else {
+          return 0;
+        }
+      } else if (a.re < b.re) {
         return -1;
-      }
-      if (a.re > b.re) {
+      } else if (a.re > b.re) {
         return 1;
+      } else {
+        return 0;
       }
-      return a.re - b.re;
     });
   }
 }

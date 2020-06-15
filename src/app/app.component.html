@@ -19,22 +19,21 @@
         <div class="flex-row col-sm-8">
           <form [formGroup]="inputDataForm" (ngSubmit)="onSubmit()" class="form-inline">
             <div class="flex-row">
-              <input formControlName="size" class="form-control mr-sm-2 col-3" type="text"
+              <input formControlName="size" class="form-control mr-sm-2 col-4" type="text"
                      placeholder="Number of bounds"
                      aria-label="Search">
-              <input formControlName="start" class="form-control mr-sm-2 col-2" type="text" placeholder="Start"
+              <input *ngIf="functionSelected" formControlName="start" class="form-control mr-sm-2 col-2" type="text" placeholder="Start"
                      aria-label="Search">
-              <input formControlName="end" class="form-control mr-sm-2 col-2" type="text" placeholder="End"
+              <input *ngIf="functionSelected" formControlName="end" class="form-control mr-sm-2 col-2" type="text" placeholder="End"
                      aria-label="Search">
-              <input formControlName="percent" class="form-control mr-sm-2 col-2" type="text"
+              <input formControlName="percent" class="form-control mr-sm-2 col-4" type="text"
                      placeholder="Nullify percent"
                      aria-label="Search">
               <button
                 [disabled]="!((complexSelected || functionSelected)
                 && inputDataForm.valid
-                && (inputDataForm.value.start < inputDataForm.value.end)
                 && (inputDataForm.value.size > 0)
-                && (inputDataForm.value.percent <= 100 && inputDataForm.value.percent > 0))"
+                && (inputDataForm.value.percent <= 100 && inputDataForm.value.percent >= 0))"
                 class="btn btn-primary my-2 my-sm-0"
                 type="submit">Provide
               </button>

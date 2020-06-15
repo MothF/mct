@@ -1,8 +1,8 @@
 import {EventEmitter, Injectable, Output} from '@angular/core';
-import {Complex, Matrix} from 'mathjs';
-import {InputType} from '../models/input.type';
-import {RandomService} from './random.service';
 import * as math from 'mathjs';
+import {Complex, Matrix} from 'mathjs';
+import {FunctionType} from '../models/function.type';
+import {RandomService} from './random.service';
 import {ComplexUtilsService} from './complex.utils.service';
 
 
@@ -12,13 +12,13 @@ export class SolutionFinderService {
   private start: number;
   private end: number;
   private percent: number;
-  private type: InputType;
+  private type: FunctionType;
   private vector: Complex[] = [];
   private matrix: Matrix;
 
   @Output()
-  eventCallback: EventEmitter<{ initial: Array<Complex>, solved: Array<Complex> }>
-    = new EventEmitter<{ initial: Array<Complex>, solved: Array<Complex> }>();
+  public eventCallback: EventEmitter<{type: FunctionType, initial: Array<Complex>, solved: Array<Complex> }>
+    = new EventEmitter<{type: FunctionType, initial: Array<Complex>, solved: Array<Complex> }>();
 
   constructor(private randomService: RandomService, private complexService: ComplexUtilsService) {
   }
@@ -39,13 +39,13 @@ export class SolutionFinderService {
       this.vector = [];
     }
     switch (this.type) {
-      case InputType.Complex:
+      case FunctionType.Complex:
         for (let i = 0; i < this.size; i++) {
           this.vector.push(math.complex(this.randomService.getRandomNumber(), this.randomService.getRandomNumber()));
         }
-        this.vector = this.complexService.sort(this.vector);
+        this.vector = this.complexService.sort(FunctionType.Complex, this.vector);
         break;
-      case InputType.Function:
+      case FunctionType.Real:
         const step = (this.end - this.start) / this.size;
         let bound = this.start;
         for (let i = 0; i < this.size; i++) {
@@ -64,66 +64,76 @@ export class SolutionFinderService {
       row = new Array<any>();
       for (let k = 0; k < this.size; k++) {
         x = 2 * math.pi * j * k / this.size;
-        row.push(math.complex(
-          math.cos(x),
-          math.sin(x)
-        ));
+        row.push(math.complex(math.cos(x), math.sin(x)));
       }
       matrix.push(row);
     }
     this.matrix = math.matrix(matrix);
   }
 
-  public solve(): void {
+  private processInput(): Complex[] {
     const f: Complex[] = [];
     switch (this.type) {
-      case InputType.Function:
+      case FunctionType.Real:
         this.vector.forEach((complex) => {
-          f.push(math.complex(complex.im, 0));
+          f.push(math.complex(0, complex.im));
         });
         break;
-      case InputType.Complex:
+      case FunctionType.Complex:
         this.vector.forEach((complex) => {
           f.push(complex);
         });
         break;
     }
+    return f;
+  }
 
+  private solveSystem(f: Complex[]): Complex[] {
     const c: Complex[] = [];
-    for (let j = 0; j < this.size; j++) {
-      let elem = math.complex(0, 0);
-      for (let k = 0; k < this.size; k++) {
-        elem = this.complexService.add(
-          elem,
-          this.complexService.multiply(
-            math.conj(f[k]),
-            math.conj(this.matrix.get([j, k]))
-          )
-        );
+    for (let row = 0; row < this.size; row++) {
+      let sum = math.complex(0, 0);
+      for (let column = 0; column < this.size; column++) {
+        const multiply = this.complexService.multiply(f[column], this.matrix.get([row, column]));
+        sum = this.complexService.add(sum, multiply);
       }
-      c.push(math.conj(
-        this.complexService.divide(
-          elem,
-          math.complex(this.size, 0))
-        )
-      );
+      const quotient = this.complexService.divide(sum, math.complex(this.size, 0));
+      c.push(quotient);
     }
+    return c;
+  }
 
-    const count = Math.ceil(this.percent / 100 * this.size);
-    for (let i = 0; i < count; i++) {
+  private nullify(c: Complex[]) {
+    const nullifyingNumber = Math.round(this.percent / 100 * this.size);
+    console.log(nullifyingNumber);
+    for (let i = 0; i < nullifyingNumber; i++) {
       c[i] = math.complex(0, 0);
     }
+  }
 
+  private backwardResolving(c: Complex[]): Complex[] {
     const finalSolution: Complex[] = [];
-    for (let k = 0; k < this.size; k++) {
-      let elem = math.complex(0, 0);
-      for (let j = 0; j < this.size; j++) {
-        elem = this.complexService.add(elem, this.complexService.multiply(c[k], math.conj(this.matrix.get([j, k]))));
+    for (let row = 0; row < this.size; row++) {
+      let sum = math.complex(0, 0);
+      for (let column = 0; column < this.size; column++) {
+        const multiply = this.complexService.multiply(c[column], math.conj(this.matrix.get([row, column])));
+        sum = this.complexService.add(sum, multiply);
       }
-      finalSolution.push(elem);
+      finalSolution.push(sum);
     }
+    return finalSolution;
+  }
 
-    this.eventCallback.emit({initial: this.vector, solved: finalSolution});
+
+
+  public solve(): void {
+    const f: Complex[] = this.processInput();
+    const c: Complex[] = this.solveSystem(f);
+    this.nullify(c);
+    const finalSolution = this.backwardResolving(c);
+    if (this.type === FunctionType.Complex) {
+      this.complexService.sort(this.type, finalSolution);
+    }
+    this.eventCallback.emit({type: this.type, initial: this.vector, solved: finalSolution});
   }
 
 }
