@@ -11,6 +11,6 @@ export class RandomService {
   }
 
   public getFunctionValues(x: number): number {
-    return math.tan(x);
+    return x*x*x;
   }
 }

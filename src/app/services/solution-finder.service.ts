@@ -104,7 +104,6 @@ export class SolutionFinderService {
 
   private nullify(c: Complex[]) {
     const nullifyingNumber = Math.round(this.percent / 100 * this.size);
-    console.log(nullifyingNumber);
     for (let i = 0; i < nullifyingNumber; i++) {
       c[i] = math.complex(0, 0);
     }

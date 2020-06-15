@@ -1,8 +1,7 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {SolutionFinderService} from './services/solution-finder.service';
 import {FunctionType} from './models/function.type';
-import {ChartComponent} from './modules/chart/chart.component';
 
 @Component({
   selector: 'app-root',
@@ -14,6 +13,10 @@ export class AppComponent implements OnInit {
   inputDataForm: FormGroup;
   complexSelected = false;
   functionSelected = false;
+  private size: number;
+  private percent: number;
+  private generate = true;
+  private changedType = false;
 
 
   constructor(private formBuilder: FormBuilder,
@@ -30,19 +33,33 @@ export class AppComponent implements OnInit {
   }
 
   onSubmit() {
+    if (this.changedType) {
+      this.generate = true;
+    } else {
+      if (this.complexSelected && this.size) {
+        this.generate = !(this.size === Number.parseInt(this.inputDataForm.value.size, 10));
+      } else if (this.functionSelected) {
+        this.generate = true;
+      }
+    }
+    this.changedType = false;
+    this.size = Number.parseInt(this.inputDataForm.value.size, 10);
+    this.percent = Number.parseInt(this.inputDataForm.value.percent, 10);
     this.solutionService.setParams(
-      Number.parseInt(this.inputDataForm.value.size, 10),
+      this.size,
       Number.parseInt(this.inputDataForm.value.start, 10),
       Number.parseInt(this.inputDataForm.value.end, 10),
-      Number.parseInt(this.inputDataForm.value.percent, 10)
+      this.percent
     );
     if (this.complexSelected) {
       this.solutionService.setType(FunctionType.Complex);
     } else {
       this.solutionService.setType(FunctionType.Real);
     }
-    this.solutionService.initVector();
-    this.solutionService.initMatrix();
+    if (this.generate) {
+      this.solutionService.initVector();
+      this.solutionService.initMatrix();
+    }
     this.solutionService.solve();
   }
 
@@ -54,5 +71,6 @@ export class AppComponent implements OnInit {
       this.functionSelected = true;
       this.complexSelected = false;
     }
+    this.changedType = true;
   }
 }

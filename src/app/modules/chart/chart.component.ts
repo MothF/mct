@@ -15,7 +15,7 @@ export class ChartComponent {
 
   public labels: any[];
   public legend = true;
-  public data: any;
+  public dataset: any;
 
   public options = {
     responsive: true,
@@ -35,7 +35,6 @@ export class ChartComponent {
         },
         gridLines: {
           display: true,
-          zeroLineWidth: 2,
           zeroLineColor: '#2C292E',
         },
       }],
@@ -48,17 +47,17 @@ export class ChartComponent {
         const initialX = new Array<any>();
         const initialY = new Array<any>();
         const solvedX = new Array<any>();
-        const solvedY = new Array<any>();
+        const solvedY = new Set<any>();
         data.initial.forEach((elem) => {
-          initialX.push(elem.re.toFixed(2));
+          initialX.push(Number.parseFloat(elem.re.toFixed(2)));
           initialY.push(elem.im);
         });
         data.solved.forEach((elem) => {
-          solvedX.push(elem.re.toFixed(2));
-          solvedY.push(elem.im);
+          solvedX.push(Number.parseFloat(elem.re.toFixed(2)));
+          solvedY.add(elem.im);
         });
-        console.log(data.type);
-        let chartType: {showLine: boolean, pointRadius: number} = {showLine: false, pointRadius: 1};
+        const updatedSolvedY = this.checker(initialX, initialY, solvedX, solvedY);
+        let chartType: { showLine: boolean, pointRadius: number } = {showLine: false, pointRadius: 1};
         switch (data.type) {
           case FunctionType.Real:
             chartType = {...{showLine: true, pointRadius: 1}};
@@ -67,28 +66,62 @@ export class ChartComponent {
             chartType = {...{showLine: false, pointRadius: 5}};
             break;
         }
-        this.data = [
+        let solutionPointsRadius = chartType.pointRadius;
+        if (solvedY.size === 1) {
+          solutionPointsRadius = 7;
+        }
+        this.dataset = [
           {
             data: initialY,
             label: 'Initial',
             fill: false,
             borderWidth: 2,
             showLine: chartType.showLine,
-            pointRadius: chartType.pointRadius
+            pointRadius: chartType.pointRadius,
           },
           {
-            data: solvedY,
+            data: updatedSolvedY,
             label: 'Solution',
             fill: false,
             showLine: chartType.showLine,
-            pointRadius: chartType.pointRadius
+            pointRadius: solutionPointsRadius
           }
         ];
         this.labels = initialX;
       }
-      this.chart.datasets = this.data;
+      this.chart.datasets = this.dataset;
       this.chart.ngOnChanges({} as SimpleChanges);
     });
   }
 
+  private checker(initialX: Array<any>, initialY: Array<any>, solvedX: Array<any>, solvedY: Set<any>): Array<any> {
+    if (solvedY.size === 1) {
+      if (!initialX.includes(0)) {
+        initialX.push(0);
+        initialX.sort((a, b) => {
+          if (a < b) {
+            return -1;
+          } else if (a > b) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
+      }
+      const zeroPosition = initialX.indexOf(0);
+      initialY.splice(zeroPosition, 0, null);
+      const updatedSolvedY = new Array<any>();
+      initialY.forEach((elem) => {
+        if (elem !== null) {
+          updatedSolvedY.push(null);
+        } else {
+          updatedSolvedY.push(0);
+        }
+      });
+      return updatedSolvedY;
+    }
+    else {
+      return Array.from(solvedY);
+    }
+  }
 }
