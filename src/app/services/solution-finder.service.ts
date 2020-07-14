@@ -103,6 +103,7 @@ export class SolutionFinderService {
   }
 
   private nullify(c: Complex[]) {
+    this.complexService.sortByModule(FunctionType.Complex, c);
     const nullifyingNumber = Math.round(this.percent / 100 * this.size);
     for (let i = 0; i < nullifyingNumber; i++) {
       c[i] = math.complex(0, 0);
@@ -129,9 +130,9 @@ export class SolutionFinderService {
     const c: Complex[] = this.solveSystem(f);
     this.nullify(c);
     const finalSolution = this.backwardResolving(c);
-    if (this.type === FunctionType.Complex) {
-      this.complexService.sort(this.type, finalSolution);
-    }
+    // if (this.type === FunctionType.Complex) {
+    //   this.complexService.sortByModule(this.type, finalSolution);
+    // }
     this.eventCallback.emit({type: this.type, initial: this.vector, solved: finalSolution});
   }
 

@@ -44,4 +44,16 @@ export class ComplexUtilsService {
       }
     });
   }
+  public sortByModule(type: FunctionType, vector: Complex[]): Complex[] {
+    return vector.sort(((a, b) => {
+      if ((math.square(a.re) + math.square(a.im)) < (math.square(b.re) + math.square(b.im))) {
+        return -1;
+      } else if ((math.square(a.re) + math.square(a.im)) > (math.square(b.re) + math.square(b.im))) {
+        return 1;
+      }
+      else {
+        return 0;
+      }
+    }));
+  }
 }

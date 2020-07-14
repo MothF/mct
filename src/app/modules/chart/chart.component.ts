@@ -56,7 +56,7 @@ export class ChartComponent {
           solvedX.push(Number.parseFloat(elem.re.toFixed(2)));
           solvedY.add(elem.im);
         });
-        const updatedSolvedY = this.checker(initialX, initialY, solvedX, solvedY);
+        const updatedSolvedY = this.checker(initialX, initialY, solvedX, solvedY, data.type);
         let chartType: { showLine: boolean, pointRadius: number } = {showLine: false, pointRadius: 1};
         switch (data.type) {
           case FunctionType.Real:
@@ -94,8 +94,9 @@ export class ChartComponent {
     });
   }
 
-  private checker(initialX: Array<any>, initialY: Array<any>, solvedX: Array<any>, solvedY: Set<any>): Array<any> {
-    if (solvedY.size === 1) {
+  private checker(initialX: Array<any>, initialY: Array<any>, solvedX: Array<any>, solvedY: Set<any>, dataType: any): Array<any> {
+    const updatedSolvedY = new Array<any>();
+    if (solvedY.size === 1 && dataType === FunctionType.Complex) {
       if (!initialX.includes(0)) {
         initialX.push(0);
         initialX.sort((a, b) => {
@@ -110,7 +111,6 @@ export class ChartComponent {
       }
       const zeroPosition = initialX.indexOf(0);
       initialY.splice(zeroPosition, 0, null);
-      const updatedSolvedY = new Array<any>();
       initialY.forEach((elem) => {
         if (elem !== null) {
           updatedSolvedY.push(null);
@@ -119,8 +119,12 @@ export class ChartComponent {
         }
       });
       return updatedSolvedY;
-    }
-    else {
+    } else if (solvedY.size === 1 && dataType === FunctionType.Real){
+      initialY.forEach(() => {
+        updatedSolvedY.push(0);
+      });
+      return updatedSolvedY;
+    } else {
       return Array.from(solvedY);
     }
   }
